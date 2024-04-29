@@ -1,9 +1,13 @@
 import 'package:camera/camera.dart';
+import 'package:erwinia/stores/camera/camera_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final CameraStore cameraStore;
+  const HomePage({super.key, required this.cameraStore});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -11,8 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   FlashMode currentFlashMode = FlashMode.auto;
-  CameraController? cameraController;
-  bool canAccessCamera = false;
 
   final Map<String, FlashMode> flashModes = {
     "always": FlashMode.always,
@@ -25,20 +27,35 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Set background to transparent
-        elevation: 0.0, // Remove shadow as it might conflict with gradient
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter, // Start the gradient from top
-              end: Alignment.bottomCenter, // End the gradient at bottom
-              colors: [
-                Colors.black,
-                Colors.transparent
-              ], // Colors - black to transparent
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.black, Colors.transparent],
             ),
           ),
         ),
+        actions: [
+          Observer(builder: (_) {
+            return Visibility(
+              visible: widget.cameraStore.canAccessCamera,
+              child: IconButton(
+                onPressed: () {
+                  _toggleFlashMode();
+                },
+                icon: Icon(
+                  _getFlashIcon(),
+                  color: currentFlashMode == FlashMode.torch
+                      ? Colors.amber
+                      : Colors.grey,
+                ),
+              ),
+            );
+          }),
+        ],
         titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: const Text(
           "Erwinia AI",
@@ -51,49 +68,52 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black,
       body: ClipRRect(
         borderRadius: BorderRadius.circular(32),
-        child: SizedBox.expand(
-          child: canAccessCamera
-              ? CameraPreview(cameraController!)
-              : Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await cameraPermission(context);
-                      setState(() {});
-                    },
-                    child: const Text(
-                      "Dar acesso a camera",
+        child: Observer(builder: (_) {
+          return SizedBox.expand(
+            child: widget.cameraStore.canAccessCamera
+                ? CameraPreview(widget.cameraStore.cameraController!)
+                : Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await cameraPermission(context);
+                      },
+                      child: const Text(
+                        "Dar acesso a camera",
+                      ),
                     ),
                   ),
-                ),
-        ),
+          );
+        }),
       ),
-      floatingActionButton: Visibility(
-        visible: canAccessCamera,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 104),
-          child: SizedBox(
-            width: 80,
-            height: 80,
-            child: FloatingActionButton(
-              onPressed: () async {},
-              backgroundColor:
-                  Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
-              foregroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-                side: const BorderSide(
-                  color: Colors.green,
-                  width: 4,
+      floatingActionButton: Observer(builder: (_) {
+        return Visibility(
+          visible: widget.cameraStore.canAccessCamera,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 104),
+            child: SizedBox(
+              width: 80,
+              height: 80,
+              child: FloatingActionButton(
+                onPressed: () async {},
+                backgroundColor:
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
+                foregroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  side: const BorderSide(
+                    color: Colors.green,
+                    width: 4,
+                  ),
                 ),
-              ),
-              child: const Icon(
-                Icons.energy_savings_leaf_rounded,
-                size: 32,
+                child: const Icon(
+                  Icons.energy_savings_leaf_rounded,
+                  size: 32,
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
@@ -102,7 +122,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (mounted) {
         currentFlashMode = selectedFlashMode;
-        cameraController?.setFlashMode(currentFlashMode);
+        widget.cameraStore.cameraController?.setFlashMode(currentFlashMode);
       }
     });
   }
@@ -144,14 +164,13 @@ class _HomePageState extends State<HomePage> {
     PermissionStatus status = await Permission.camera.request();
     if (status == PermissionStatus.granted) {
       cameras = await availableCameras();
-      cameraController = CameraController(cameras[0], ResolutionPreset.high);
-      cameraController?.initialize().then((value) => {
-            cameraController?.setFlashMode(currentFlashMode).then((value) {
-              if (mounted) {
-                setState(() {
-                  canAccessCamera = true;
-                });
-              }
+      widget.cameraStore.cameraController =
+          CameraController(cameras[0], ResolutionPreset.high);
+      widget.cameraStore.cameraController?.initialize().then((value) => {
+            widget.cameraStore.cameraController
+                ?.setFlashMode(currentFlashMode)
+                .then((value) {
+              widget.cameraStore.setAccessCamera(true);
             }),
           });
     } else if (status == PermissionStatus.denied) {
