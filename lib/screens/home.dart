@@ -53,12 +53,22 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            onPressed: () {
-              _toggleFlashMode();
-            },
-            icon: Icon(_getFlashIcon()),
-          ),
+          Observer(builder: (_) {
+            return Visibility(
+              visible: widget.cameraStore.canAccessCamera,
+              child: IconButton(
+                onPressed: () {
+                  _toggleFlashMode();
+                },
+                icon: Icon(
+                  _getFlashIcon(),
+                  color: currentFlashMode == FlashMode.torch
+                      ? Colors.amber
+                      : Colors.grey,
+                ),
+              ),
+            );
+          }),
         ],
       ),
       extendBodyBehindAppBar: true,
