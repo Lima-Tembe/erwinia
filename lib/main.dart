@@ -1,4 +1,5 @@
 import 'package:erwinia/screens/home.dart';
+import 'package:erwinia/store/camera_store.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,11 +32,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final CameraStore cameraStore = CameraStore();
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
-      body: HomePage(),
+      body: HomePage(
+        cameraStore: cameraStore,
+      ),
     );
   }
 }
