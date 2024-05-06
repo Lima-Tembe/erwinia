@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:erwinia/store/camera_store.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+
+import '../classifier/classifier.dart';
 
 class HomePage extends StatefulWidget {
   final CameraStore cameraStore;
@@ -22,10 +27,34 @@ class _HomePageState extends State<HomePage> {
     "torch": FlashMode.torch,
   };
 
+  final _labelsFileName = "assets/labels.txt";
+
+  final _modelFileName = "model_unquant.tflite";
+
+  Classifier? _classifier;
+
   @override
   void initState() {
     super.initState();
     cameraPermission(context);
+    _loadClassifier();
+  }
+
+  Future _loadClassifier() async {
+    debugPrint(
+      'Start loading of Classifier with '
+          'labels at $_labelsFileName, '
+          'model at $_modelFileName',
+    );
+
+    // #2
+    final classifier = await Classifier.loadWith(
+      labelsFileName: _labelsFileName,
+      modelFileName: _modelFileName,
+    );
+
+    // #3
+    _classifier = classifier;
   }
 
   @override
@@ -103,7 +132,9 @@ class _HomePageState extends State<HomePage> {
               width: 80,
               height: 80,
               child: FloatingActionButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  await _takePicture();
+                },
                 backgroundColor:
                     Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
                 foregroundColor: Colors.green,
@@ -227,5 +258,27 @@ class _HomePageState extends State<HomePage> {
     } else if (status == PermissionStatus.permanentlyDenied) {
       openAppSettings();
     }
+  }
+
+  Future<void> _takePicture() async {
+    // Check if camera controller is initialized
+    if (!widget.cameraStore.cameraController!.value.isInitialized) {
+      return;
+    }
+
+    // Capture the image
+    final image = await widget.cameraStore.cameraController!.takePicture();
+
+    // Get the temporary directory path
+    final tempDir = await getTemporaryDirectory();
+
+    // Generate a unique file name
+    String fileName = "${DateTime.now()}.jpg"; // Replace with preferred extension if needed
+    // Create the image file
+    final imageFile = File("${tempDir.path}/$fileName");
+
+    // Save the image to the file
+    await image.saveTo(imageFile.path);
+    debugPrint("Image Saved to: $imageFile");
   }
 }
