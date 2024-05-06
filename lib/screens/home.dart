@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:image/image.dart' as img;
 
 import '../classifier/classifier.dart';
 
@@ -17,8 +18,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+enum _ResultStatus {
+  notFound,
+  found,
+}
+
 class _HomePageState extends State<HomePage> {
   FlashMode currentFlashMode = FlashMode.auto;
+  String accuracyLabel = "", plantLabel = "";
 
   final Map<String, FlashMode> flashModes = {
     "always": FlashMode.always,
@@ -133,7 +140,11 @@ class _HomePageState extends State<HomePage> {
               height: 80,
               child: FloatingActionButton(
                 onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   await _takePicture();
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text("Label Detected: $plantLabel, $accuracyLabel"),),
+                  );
                 },
                 backgroundColor:
                     Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
@@ -280,5 +291,26 @@ class _HomePageState extends State<HomePage> {
     // Save the image to the file
     await image.saveTo(imageFile.path);
     debugPrint("Image Saved to: $imageFile");
+    debugPrint("SENDING IMAGE TO MODEL DETECTION...");
+    _analyzeImage(imageFile);
+  }
+
+  void _analyzeImage(File imageCaptured) {
+
+    // #1
+    final image = img.decodeImage(imageCaptured.readAsBytesSync())!;
+
+    // #2
+    final resultCategory = _classifier!.predict(image);
+
+    // #3
+    final result = resultCategory.score >= 0.8
+        ? _ResultStatus.found
+        : _ResultStatus.notFound;
+    plantLabel = resultCategory.label;
+    final accuracy = resultCategory.score;
+    if (result == _ResultStatus.found) {
+      accuracyLabel = 'Accuracy: ${(accuracy * 100).toStringAsFixed(2)}%';
+    }
   }
 }
