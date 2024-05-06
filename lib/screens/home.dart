@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:erwinia/screens/situation.dart';
 import 'package:erwinia/store/camera_store.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -26,6 +28,8 @@ enum _ResultStatus {
 class _HomePageState extends State<HomePage> {
   FlashMode currentFlashMode = FlashMode.auto;
   String accuracyLabel = "", plantLabel = "";
+  double accuracyScore = 0.0;
+  File? imageFile;
 
   final Map<String, FlashMode> flashModes = {
     "always": FlashMode.always,
@@ -50,8 +54,8 @@ class _HomePageState extends State<HomePage> {
   Future _loadClassifier() async {
     debugPrint(
       'Start loading of Classifier with '
-          'labels at $_labelsFileName, '
-          'model at $_modelFileName',
+      'labels at $_labelsFileName, '
+      'model at $_modelFileName',
     );
 
     // #2
@@ -143,8 +147,22 @@ class _HomePageState extends State<HomePage> {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
                   await _takePicture();
                   scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text("Label Detected: $plantLabel, $accuracyLabel"),),
+                    SnackBar(
+                      content:
+                          Text("Label Detected: $plantLabel, $accuracyLabel"),
+                    ),
                   );
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => SituationScreen(
+                          imageFile: imageFile!,
+                          plantLabel: plantLabel,
+                          accuracyScore: accuracyScore,
+                        ),
+                      ),
+                    );
+                  });
                 },
                 backgroundColor:
                     Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
@@ -284,19 +302,19 @@ class _HomePageState extends State<HomePage> {
     final tempDir = await getTemporaryDirectory();
 
     // Generate a unique file name
-    String fileName = "${DateTime.now()}.jpg"; // Replace with preferred extension if needed
+    String fileName =
+        "${DateTime.now()}.jpg"; // Replace with preferred extension if needed
     // Create the image file
-    final imageFile = File("${tempDir.path}/$fileName");
+    imageFile = File("${tempDir.path}/$fileName");
 
     // Save the image to the file
-    await image.saveTo(imageFile.path);
+    await image.saveTo(imageFile!.path);
     debugPrint("Image Saved to: $imageFile");
     debugPrint("SENDING IMAGE TO MODEL DETECTION...");
-    _analyzeImage(imageFile);
+    _analyzeImage(imageFile!);
   }
 
   void _analyzeImage(File imageCaptured) {
-
     // #1
     final image = img.decodeImage(imageCaptured.readAsBytesSync())!;
 
@@ -308,9 +326,9 @@ class _HomePageState extends State<HomePage> {
         ? _ResultStatus.found
         : _ResultStatus.notFound;
     plantLabel = resultCategory.label;
-    final accuracy = resultCategory.score;
+    accuracyScore = resultCategory.score;
     if (result == _ResultStatus.found) {
-      accuracyLabel = 'Accuracy: ${(accuracy * 100).toStringAsFixed(2)}%';
+      accuracyLabel = 'Accuracy: ${(accuracyScore * 100).toStringAsFixed(2)}%';
     }
   }
 }
