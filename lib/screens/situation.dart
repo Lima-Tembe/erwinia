@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:erwinia/store/disease_store.dart';
 import 'package:erwinia/widgets/squared_image.dart';
 import 'package:flutter/material.dart';
 
@@ -7,11 +8,13 @@ class SituationScreen extends StatefulWidget {
   final File imageFile;
   final String plantLabel;
   final double accuracyScore;
+  final DiseaseStore diseaseStore;
   const SituationScreen({
     super.key,
     required this.imageFile,
     required this.plantLabel,
     required this.accuracyScore,
+    required this.diseaseStore,
   });
 
   @override
@@ -21,6 +24,9 @@ class SituationScreen extends StatefulWidget {
 class _SituationScreenState extends State<SituationScreen> {
   @override
   Widget build(BuildContext context) {
+    Map plantData = widget.diseaseStore.diseaseData.firstWhere(
+      (disease) => disease["name"] == widget.plantLabel,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text("Resultado"),
@@ -51,7 +57,7 @@ class _SituationScreenState extends State<SituationScreen> {
                 height: 8,
               ),
               Text(
-                widget.plantLabel,
+                plantData["diagnosed"],
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -60,13 +66,28 @@ class _SituationScreenState extends State<SituationScreen> {
               const SizedBox(
                 height: 4,
               ),
-              Text(
-                  "A probabilidade da planta estar doente é de ${(widget.accuracyScore * 100).toStringAsFixed(2)}%. A planta pode estar infectada com uma doença chamada ${widget.plantLabel}!"),
+              Visibility(
+                visible: plantData["infected"],
+                child: Text(
+                    "A probabilidade da planta estar doente é de ${(widget.accuracyScore * 100).toStringAsFixed(2)}%. A planta pode estar infectada com uma doença chamada ${plantData["diagnosed"]}!"),
+              ),
+              Visibility(
+                visible: !plantData["infected"],
+                child: Text(
+                    "A probabilidade da planta estar saudável é de ${(widget.accuracyScore * 100).toStringAsFixed(2)}%"),
+              ),
               const SizedBox(
                 height: 8,
               ),
-              const Text(
-                  "Clique no botão abaixo para ver mais detalhes da doença e saber o processo de tratamento da doença!"),
+              Text(plantData["description"]),
+              const SizedBox(
+                height: 8,
+              ),
+              Visibility(
+                visible: plantData["infected"],
+                child: const Text(
+                    "Clique no botão abaixo para ver mais detalhes da doença e saber o processo de tratamento da doença!"),
+              ),
               const SizedBox(
                 height: 12,
               ),
@@ -74,10 +95,13 @@ class _SituationScreenState extends State<SituationScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: const Text("Ver Tratamento"),
-        icon: const Icon(Icons.tips_and_updates_outlined),
+      floatingActionButton: Visibility(
+        visible: plantData["infected"],
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          label: const Text("Ver Tratamento"),
+          icon: const Icon(Icons.tips_and_updates_outlined),
+        ),
       ),
     );
   }

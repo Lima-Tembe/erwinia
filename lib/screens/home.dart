@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:erwinia/screens/situation.dart';
 import 'package:erwinia/store/camera_store.dart';
+import 'package:erwinia/store/disease_store.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +15,12 @@ import '../classifier/classifier.dart';
 
 class HomePage extends StatefulWidget {
   final CameraStore cameraStore;
-  const HomePage({super.key, required this.cameraStore});
+  final DiseaseStore diseaseStore;
+  const HomePage({
+    super.key,
+    required this.cameraStore,
+    required this.diseaseStore,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -142,43 +148,46 @@ class _HomePageState extends State<HomePage> {
             child: SizedBox(
               width: 80,
               height: 80,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  await _takePicture();
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(
-                      content:
-                          Text("Label Detected: $plantLabel, $accuracyLabel"),
+              child: Observer(builder: (_) {
+                return FloatingActionButton(
+                  onPressed: widget.cameraStore.fabEnabled
+                      ? () async {
+                          widget.cameraStore.setFabButton(false);
+                          await _takePicture();
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => SituationScreen(
+                                  imageFile: imageFile!,
+                                  plantLabel: plantLabel,
+                                  accuracyScore: accuracyScore,
+                                  diseaseStore: widget.diseaseStore,
+                                ),
+                              ),
+                            );
+                          });
+                          widget.cameraStore.setFabButton(true);
+                        }
+                      : null,
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.9),
+                  foregroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    side: const BorderSide(
+                      color: Colors.green,
+                      width: 4,
                     ),
-                  );
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => SituationScreen(
-                          imageFile: imageFile!,
-                          plantLabel: plantLabel,
-                          accuracyScore: accuracyScore,
-                        ),
-                      ),
-                    );
-                  });
-                },
-                backgroundColor:
-                    Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
-                foregroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                  side: const BorderSide(
-                    color: Colors.green,
-                    width: 4,
                   ),
-                ),
-                child: const Icon(
-                  Icons.energy_savings_leaf_rounded,
-                  size: 32,
-                ),
-              ),
+                  child: const Icon(
+                    Icons.energy_savings_leaf_rounded,
+                    size: 32,
+                  ),
+                );
+              }),
             ),
           ),
         );

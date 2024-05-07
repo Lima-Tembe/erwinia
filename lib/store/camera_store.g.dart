@@ -57,6 +57,22 @@ mixin _$CameraStore on _CameraStoreBase, Store {
     });
   }
 
+  late final _$fabEnabledAtom =
+      Atom(name: '_CameraStoreBase.fabEnabled', context: context);
+
+  @override
+  bool get fabEnabled {
+    _$fabEnabledAtom.reportRead();
+    return super.fabEnabled;
+  }
+
+  @override
+  set fabEnabled(bool value) {
+    _$fabEnabledAtom.reportWrite(value, super.fabEnabled, () {
+      super.fabEnabled = value;
+    });
+  }
+
   late final _$_CameraStoreBaseActionController =
       ActionController(name: '_CameraStoreBase', context: context);
 
@@ -83,11 +99,23 @@ mixin _$CameraStore on _CameraStoreBase, Store {
   }
 
   @override
+  dynamic setFabButton(bool value) {
+    final _$actionInfo = _$_CameraStoreBaseActionController.startAction(
+        name: '_CameraStoreBase.setFabButton');
+    try {
+      return super.setFabButton(value);
+    } finally {
+      _$_CameraStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 cameraController: ${cameraController},
 canAccessCamera: ${canAccessCamera},
-cameraImage: ${cameraImage}
+cameraImage: ${cameraImage},
+fabEnabled: ${fabEnabled}
     ''';
   }
 }

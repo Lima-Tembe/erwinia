@@ -10,6 +10,9 @@ abstract class _DiseaseStoreBase with Store {
   List diseaseData = [
     {
       "name": "Tomato Yellow Leaf Curl Virus",
+      "diagnosed": "Vírus do Enrolamento Amarelo das Folhas do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants.",
         "Step 2: Use resistant varieties when available.",
@@ -18,6 +21,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato mosaic virus",
+      "diagnosed": "Vírus do Mosaico do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants.",
         "Step 2: Control aphids, which spread the virus, using insecticides or traps.",
@@ -26,6 +32,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Target Spot",
+      "diagnosed": "Mancha Alvo do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plant debris.",
         "Step 2: Apply fungicides containing copper or chlorothalonil.",
@@ -34,6 +43,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Spider mites",
+      "diagnosed": "Ácaros do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Use miticides to control spider mites.",
         "Step 2: Maintain proper plant spacing and avoid overcrowding.",
@@ -42,6 +54,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Septoria leaf spot",
+      "diagnosed": "Mancha Foliar Septoria do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected leaves.",
         "Step 2: Apply fungicides containing copper or chlorothalonil.",
@@ -50,6 +65,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Leaf Mold",
+      "diagnosed": "Mofo das Folhas do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Improve air circulation around plants.",
         "Step 2: Apply fungicides containing copper or chlorothalonil.",
@@ -58,6 +76,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Late blight",
+      "diagnosed": "Míldio Tardio do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants and debris.",
         "Step 2: Apply fungicides containing chlorothalonil or mancozeb.",
@@ -66,12 +87,18 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato healthy",
+      "diagnosed": "Tomate saudável",
+      "infected": false,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "No specific treatment needed for healthy plants. Practice good cultural practices."
       ]
     },
     {
       "name": "Tomato Early blight",
+      "diagnosed": "Míldio Precoce do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected leaves and plant debris.",
         "Step 2: Apply fungicides containing chlorothalonil or copper.",
@@ -80,6 +107,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Tomato Bacterial spot",
+      "diagnosed": "Mancha Bacteriana do Tomate",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants and debris.",
         "Step 2: Apply copper-based fungicides.",
@@ -88,6 +118,9 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Potato Late blight",
+      "diagnosed": "Míldio Tardio da Batata",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants and tubers.",
         "Step 2: Apply fungicides containing chlorothalonil or mancozeb.",
@@ -96,12 +129,18 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Potato healthy",
+      "diagnosed": "Batata saudável",
+      "infected": false,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "No specific treatment needed for healthy plants. Practice good cultural practices."
       ]
     },
     {
       "name": "Potato Early blight",
+      "diagnosed": "Míldio Precoce da Batata",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected leaves and plant debris.",
         "Step 2: Apply fungicides containing chlorothalonil or copper.",
@@ -110,12 +149,18 @@ abstract class _DiseaseStoreBase with Store {
     },
     {
       "name": "Pepper bell healthy",
+      "diagnosed": "Pimento saudável",
+      "infected": false,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "No specific treatment needed for healthy plants. Practice good cultural practices."
       ]
     },
     {
       "name": "Pepper bell Bacterial spot",
+      "diagnosed": "Mancha Bacteriana do Pimento",
+      "infected": true,
+      "description": "Lorem ipsum dolor",
       "treatment": [
         "Step 1: Remove and destroy infected plants and debris.",
         "Step 2: Apply copper-based fungicides.",

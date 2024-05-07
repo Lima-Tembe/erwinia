@@ -12,7 +12,6 @@ abstract class _CameraStoreBase with Store {
 
   @observable
   bool canAccessCamera = false;
-
   @action
   setAccessCamera(bool value) => canAccessCamera = value;
 
@@ -20,4 +19,9 @@ abstract class _CameraStoreBase with Store {
   CameraImage? cameraImage;
   @action
   setCameraImage(CameraImage value) => cameraImage = value;
+
+  @observable
+  bool fabEnabled = true;
+  @action
+  setFabButton(bool value) => fabEnabled = value;
 }
