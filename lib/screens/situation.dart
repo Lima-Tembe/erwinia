@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:erwinia/screens/treatment.dart';
 import 'package:erwinia/store/disease_store.dart';
 import 'package:erwinia/widgets/squared_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SituationScreen extends StatefulWidget {
@@ -24,12 +26,23 @@ class SituationScreen extends StatefulWidget {
 class _SituationScreenState extends State<SituationScreen> {
   @override
   Widget build(BuildContext context) {
+    debugPrint("Length of Diseases: ${widget.diseaseStore.diseaseData.length}");
     Map plantData = widget.diseaseStore.diseaseData.firstWhere(
       (disease) => disease["name"] == widget.plantLabel,
     );
     return Scaffold(
       appBar: AppBar(
         title: const Text("Resultado"),
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.volume_off_rounded),
+            label: const Text("Não Ouvir"),
+          ),
+          const SizedBox(
+            width: 24,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -88,8 +101,16 @@ class _SituationScreenState extends State<SituationScreen> {
       floatingActionButton: Visibility(
         visible: plantData["infected"],
         child: FloatingActionButton.extended(
-          onPressed: () {},
-          label: const Text("Ver Tratamento"),
+          onPressed: () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                  builder: ((context) => TreatmentScreen(
+                        plantData: plantData,
+                        imageFile: widget.imageFile,
+                      ))),
+            );
+          },
+          label: const Text("Ver Detalhes"),
           icon: const Icon(Icons.tips_and_updates_outlined),
         ),
       ),

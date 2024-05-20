@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   final _labelsFileName = "assets/labels.txt";
 
-  final _modelFileName = "erwinia_model.tflite";
+  final _modelFileName = "model_unquant.tflite";
 
   Classifier? _classifier;
 
@@ -130,7 +130,6 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         await cameraPermission(context);
-                        setState(() {});
                       },
                       child: const Text(
                         "Dar acesso a camera",
