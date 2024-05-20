@@ -105,86 +105,117 @@ abstract class _DiseaseStoreBase with Store {
       "diagnosed": "Ácaros do Tomate",
       "infected": true,
       "description": "Lorem ipsum dolor",
+      "symptoms": [
+        "Normalmente aparecem teias finas na parte inferior das folhas. As folhas podem ficar amarelas ou bronzeadas e desenvolver pontos (pequenos pontos amarelos ou brancos). Em casos graves, as folhas podem cair prematuramente."
+      ],
+      "prevent": [
+        "Proporcione circulação de ar adequada espaçando as plantas corretamente e evitando a rega por cima."
+      ],
       "control": [
-        "Step 1: Use miticides to control spider mites.",
-        "Step 2: Maintain proper plant spacing and avoid overcrowding.",
-        "Step 3: Keep plants well-watered to reduce stress."
-      ]
+        "Remova todas as folhas infectadas, especialmente as piores.",
+        "Borrife a planta com um sabão inseticida orgânico para matar quaisquer ácaros vermelhos vivos. Pode usar um spray caseiro: Misture 350ml de água, 120ml de álcool isopropílico a 92% e 2 colheres de sopa de detergente em um frasco de spray de água de 500ml."
+      ],
     },
     {
       "name": "Tomato Septoria leaf spot",
       "diagnosed": "Mancha Foliar Septoria do Tomate",
       "infected": true,
       "description": "Lorem ipsum dolor",
+      "symptoms": [
+        "Uma doença fúngica que causa pequenas manchas circulares, encharcadas de água, na parte inferior das folhas mais velhas. As manchas se tornam cinzas a castanhas com margens marrom-escuras e frequentemente são cercadas por um halo amarelo."
+      ],
+      "prevent": [
+        "Trate a doença assim que ela aparecer, remova os detritos das plantas caídas e limpe suas mãos e ferramentas. Você também pode fornecer espaço entre as plantas para circulação de ar, usar cobertura morta para evitar que esporos alcancem as folhas inferiores e evitar regar em excesso."
+      ],
       "control": [
-        "Step 1: Remove and destroy infected leaves.",
-        "Step 2: Apply fungicides containing copper or chlorothalonil.",
-        "Step 3: Water plants at the base to avoid wetting foliage."
-      ]
+        "Remova imediatamente as folhas infectadas e considere o uso de fungicidas orgânicos ou químicos."
+        "Alguns fungicidas que podem ajudar a controlar doenças de manchas nas folhas incluem produtos contendo iprodiona, clorotalonil, mancozebe, fludioxonil, azoxistrobina ou pentiopirade. Fungicidas orgânicos contendo bicarbonato de potássio ou cobre podem ser eficazes se a doença não estiver muito avançada."
+        "Também pode aplicar fungicidas à base de cobre ou sprays de enxofre para prevenir e controlar a doença."
+      ],
     },
     {
       "name": "Tomato Leaf Mold",
       "diagnosed": "Mofo das Folhas do Tomate",
       "infected": true,
-      "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Improve air circulation around plants.",
-        "Step 2: Apply fungicides containing copper or chlorothalonil.",
-        "Step 3: Avoid overhead irrigation and water plants at the base."
-      ]
+      "description": "O mofo foliar do tomate é uma doença fúngica que pode se espalhar rapidamente em condições quentes e úmidas.",
+      "symptoms": [
+        "Manchas esverdeadas-amareladas pálidas, geralmente com menos de 0.64cm, sem margens definidas, formam-se na parte superior das folhas. Um mofo aveludado verde-oliva a marrom se forma na superfície inferior da folha abaixo das manchas. As manchas nas folhas se juntam e tornam-se marrons. As folhas murcham e morrem, mas muitas vezes permanecem presas à planta."
+      ],
+      "prevent": [
+        "Espaçe as plantas para permitir uma boa movimentação de ar entre as fileiras e as plantas individuais. Também pode podar as plantas para aumentar o fluxo de ar.",
+        "Mantenha a humidade relativa abaixo de 85%. Em estufas, pode usar ventiladores e aberturas para circular o ar e levantar os lados de túneis altos para reduzir a umidade.",
+        "Use irrigação por gota a gota para minimizar a humidade das folhas. Se regar por cima, faça isso de manhã para que as folhas possam secar rapidamente.",
+        "Limpe e higienize as superfícies da estufa com vapor, lixivia ou soluções desinfetantes."
+      ],
     },
     {
       "name": "Tomato Late blight",
       "diagnosed": "Míldio Tardio do Tomate",
       "infected": true,
-      "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Remove and destroy infected plants and debris.",
-        "Step 2: Apply fungicides containing chlorothalonil or mancozeb.",
-        "Step 3: Use resistant varieties when available."
-      ]
+      "description": "Também conhecido como late blight, é uma doença fúngica que se espalha rapidamente pelo follaje e fruto dos tomates em climas quentes e húmidos, causando colapso e decomposição. É uma doença muito grave para tomates ao ar livre, mas os tomates cultivados em estufas também podem ser gravemente afetados.",
+      "symptoms": [
+        "Manchas aquosas verde-negras nas superfícies superiores das folhas mais velhas. Estas manchas aumentam rapidamente e, em climas húmidos, pode desenvolver-se um crescimento felpudo na parte inferior da folha. No fruto, aparecem manchas ásperas, firmes e de cor escura",
+      ],
+      "prevent": [
+        "Leia cuidadosamente os pacotes de sementes ou rótulos das plantas para selecionar uma variedade de tomate que seja resistente ao míldio.",
+        "Dê às plantas espaço suficiente para permitir a circulação de ar e reduzir a humidade.",
+        "Use irrigação por gota a gota para regar o solo ao redor da base das plantas e manter as folhas secas. Regue de manhã para que as folhas possam secar rapidamente ao sol.",
+        "Remova quaisquer folhas afectadas, queime ou descarte-as.",
+        "Pulverizar as plantas com uma solução de uma colher de sopa de bicarbonato de sódio, uma colher de chá de óleo vegetal e uma pequena quantidade de sabão suave em um garrafa de água(4L)."
+      ],
     },
     {
       "name": "Tomato healthy",
       "diagnosed": "Tomate saudável",
       "infected": false,
       "description": "Lorem ipsum dolor",
-      "control": [
-        "No specific control needed for healthy plants. Practice good cultural practices."
-      ]
     },
     {
       "name": "Tomato Early blight",
       "diagnosed": "Míldio Precoce do Tomate",
       "infected": true,
-      "description": "Lorem ipsum dolor",
+      "description": "O míldio precoce é uma doença fúngica que pode afetar as plantas de tomate, causada pelo fungo Alternaria solani. Pode ocorrer a qualquer momento durante a temporada de crescimento, mas se espalha rapidamente em alta umidade e temperaturas acima de 24°C.",
+      "symptoms": [
+        "Podridão aquosa das folhas que logo se desmoronam, enrugam e ficam marrons",
+        "Lesões nas hastes das folhas e caules",
+        "Crescimento branco às vezes visível em condições húmidas ou muito húmidas",
+        "Amarelamento da área foliar circundante",
+        "Morte prematura das folhas afectadas",
+        "Racha nos frutos no local do caule"
+      ],
+      "prevent": [
+        "O míldio precoce pode ser prevenido mantendo as plantas secas, amarrando as plantas e removendo as plantas infectadas."
+      ],
       "control": [
-        "Step 1: Remove and destroy infected leaves and plant debris.",
-        "Step 2: Apply fungicides containing chlorothalonil or copper.",
-        "Step 3: Practice crop rotation and avoid overhead irrigation."
-      ]
+        "Remova folhas e partes da planta infectadas durante a temporada de crescimento e no final da temporada. Você pode queimá-las ou enterrá-las.",
+        "Aplique um fungicida sintético ou orgânico no início da temporada, quando os sintomas aparecerem.",
+        "Regue as plantas na base, evitando molhar as folhas. Pode usar irrigação por gota a gota para manter as folhas secas.",
+        "Assim que as plantas estiverem estabelecidas, podar os ramos inferiores de 3-4 folhas.",
+        "Mantenha as plantas bem cobertas de cobertura morta para reduzir o respingo de solo.",
+        "Compre sementes e mudas de fontes confiáveis e use tubérculos de sementes sem doenças para o plantio.",
+        "Remova as ervas daninhas voluntárias.",
+        "Pulverizar uma solução de bicarbonato de sódio nas plantas pode prevenir o míldio e afastar as pragas."
+      ],
     },
     {
       "name": "Tomato Bacterial spot",
       "diagnosed": "Mancha Bacteriana do Tomate",
       "infected": true,
       "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Remove and destroy infected plants and debris.",
-        "Step 2: Apply copper-based fungicides.",
-        "Step 3: Use disease-free seeds and transplants."
-      ]
+      "symptoms": [],
+      "prevent": [],
+      "monitor": [],
+      "control": [],
     },
     {
       "name": "Potato Late blight",
       "diagnosed": "Míldio Tardio da Batata",
       "infected": true,
       "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Remove and destroy infected plants and tubers.",
-        "Step 2: Apply fungicides containing chlorothalonil or mancozeb.",
-        "Step 3: Avoid planting in poorly drained areas and practice crop rotation."
-      ]
+      "symptoms": [],
+      "prevent": [],
+      "monitor": [],
+      "control": [],
     },
     {
       "name": "Potato healthy",
@@ -200,11 +231,10 @@ abstract class _DiseaseStoreBase with Store {
       "diagnosed": "Míldio Precoce da Batata",
       "infected": true,
       "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Remove and destroy infected leaves and plant debris.",
-        "Step 2: Apply fungicides containing chlorothalonil or copper.",
-        "Step 3: Practice crop rotation and avoid overhead irrigation."
-      ]
+      "symptoms": [],
+      "prevent": [],
+      "monitor": [],
+      "control": [],
     },
     {
       "name": "Pepper bell healthy",
@@ -220,11 +250,10 @@ abstract class _DiseaseStoreBase with Store {
       "diagnosed": "Mancha Bacteriana do Pimento",
       "infected": true,
       "description": "Lorem ipsum dolor",
-      "control": [
-        "Step 1: Remove and destroy infected plants and debris.",
-        "Step 2: Apply copper-based fungicides.",
-        "Step 3: Use disease-free seeds and transplants."
-      ]
+      "symptoms": [],
+      "prevent": [],
+      "monitor": [],
+      "control": [],
     }
   ];
 }

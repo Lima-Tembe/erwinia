@@ -30,16 +30,6 @@ class _SituationScreenState extends State<SituationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Resultado"),
-        actions: [
-          ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.volume_up_rounded),
-            label: const Text("Modo Voz"),
-          ),
-          const SizedBox(
-            width: 24,
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
