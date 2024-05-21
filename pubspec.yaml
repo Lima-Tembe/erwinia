@@ -37,6 +37,7 @@ dependencies:
   image: ^3.3.0
   mobx: ^2.3.3+2
   mobx_codegen: ^2.6.1
+  mockito: ^5.4.4
   path: ^1.9.0
   path_provider: ^2.1.3
   permission_handler: ^11.3.1
