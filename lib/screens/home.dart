@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   final _labelsFileName = "assets/labels.txt";
 
-  final _modelFileName = "model_unquant.tflite";
+  final _modelFileName = "erwinia_model.tflite";
 
   Classifier? _classifier;
 
