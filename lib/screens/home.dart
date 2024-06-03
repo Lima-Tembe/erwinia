@@ -45,7 +45,6 @@ class _HomePageState extends State<HomePage> {
   };
 
   final _labelsFileName = "assets/labels.txt";
-
   final _modelFileName = "erwinia_model.tflite";
 
   Classifier? _classifier;
@@ -242,7 +241,7 @@ class _HomePageState extends State<HomePage> {
     if (status == PermissionStatus.granted) {
       cameras = await availableCameras();
       widget.cameraStore.cameraController =
-          CameraController(cameras[0], ResolutionPreset.high);
+          CameraController(cameras[0], ResolutionPreset.medium);
       widget.cameraStore.cameraController?.initialize().then((value) => {
             widget.cameraStore.cameraController
                 ?.setFlashMode(currentFlashMode)

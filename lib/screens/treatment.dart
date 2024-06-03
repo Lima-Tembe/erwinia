@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:erwinia/widgets/squared_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class TreatmentScreen extends StatefulWidget {
   final Map plantData;
@@ -17,6 +18,26 @@ class TreatmentScreen extends StatefulWidget {
 }
 
 class _TreatmentScreenState extends State<TreatmentScreen> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool voiceModeActive = false;
+  String symptoms = "", preventions = "", control = "";
+
+  @override
+  void initState() {
+    super.initState();
+    initTts();
+    flutterTts.setCompletionHandler(() {
+      setState(() {
+        voiceModeActive = false;
+      });
+    });
+  }
+
+  Future<void> initTts() async {
+    await flutterTts.getLanguages;
+    await flutterTts.setLanguage("pt-PT");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,9 +45,30 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
         title: const Text("Detalhes"),
         actions: [
           ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.volume_up_rounded),
-            label: const Text("Ouvir"),
+            onPressed: () {
+              setState(() {
+                voiceModeActive = !voiceModeActive;
+              });
+              if (voiceModeActive) {
+                debugPrint("Voice mode ON!");
+                flutterTts.speak(widget.plantData["diagnosed"] +
+                    ". Sintomas. " +
+                    symptoms +
+                    " Medidas Preventivas. " +
+                    preventions +
+                    " Controle/Tratamento. " +
+                    control);
+              } else {
+                debugPrint("Voice Mode OFF!");
+                flutterTts.stop();
+              }
+            },
+            icon: Icon(
+              voiceModeActive
+                  ? Icons.volume_off_rounded
+                  : Icons.volume_up_rounded,
+            ),
+            label: Text(voiceModeActive ? "Não Ouvir" : "Ouvir"),
           ),
           const SizedBox(
             width: 4,
@@ -84,6 +126,7 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: widget.plantData["symptoms"].length,
                 itemBuilder: (context, index) {
+                  symptoms += widget.plantData["symptoms"][index];
                   return Text(widget.plantData["symptoms"][index]);
                 },
               ),
@@ -108,6 +151,7 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: widget.plantData["prevent"].length,
                 itemBuilder: (context, index) {
+                  preventions += widget.plantData["prevent"][index];
                   return Text(widget.plantData["prevent"][index]);
                 },
               ),
@@ -132,6 +176,7 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: widget.plantData["control"].length,
                 itemBuilder: (context, index) {
+                  control += widget.plantData["control"][index];
                   return Text(widget.plantData["control"][index]);
                 },
               ),

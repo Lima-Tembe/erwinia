@@ -1,31 +1,3 @@
-// Copyright (c) 2022 Kodeco LLC
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
-// distribute, sublicense, create a derivative work, and/or sell copies of the
-// Software in any work that is designed, intended, or marketed for pedagogical
-// or instructional purposes related to programming, coding,
-// application development, or information technology.  Permission for such use,
-// copying, modification, merger, publication, distribution, sublicensing,
-// creation of derivative works, or sale is expressly withheld.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -113,7 +85,7 @@ class Classifier {
       'size: ${image.length} bytes',
     );
 
-    // Load the image and convert it to TensorImage for TensorFlow Input
+    // Converte a imagem em Tensor
     final inputImage = _preProcessInput(image);
 
     debugPrint(
@@ -121,18 +93,17 @@ class Classifier {
       'size: ${inputImage.buffer.lengthInBytes} bytes',
     );
 
-    // Define the output buffer
+    // Define o output
     final outputBuffer = TensorBuffer.createFixedSize(
       _model.outputShape,
       _model.outputType,
     );
 
-    // Run inference
     _model.interpreter.run(inputImage.buffer, outputBuffer.buffer);
 
     debugPrint('OutputBuffer: ${outputBuffer.getDoubleList()}');
 
-    // Post Process the outputBuffer
+    // Processa o output
     final resultCategories = _postProcessOutput(outputBuffer);
     final topResult = resultCategories.first;
 
@@ -173,7 +144,7 @@ class Classifier {
     final resizeOp = ResizeOp(shapeLength, shapeLength, ResizeMethod.BILINEAR);
 
     // #4
-    final normalizeOp = NormalizeOp(127.5, 127.5);
+    final normalizeOp = NormalizeOp(224, 224);
 
     // #5
     final imageProcessor = ImageProcessorBuilder()
