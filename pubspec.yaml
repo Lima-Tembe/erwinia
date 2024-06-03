@@ -34,6 +34,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_mobx: ^2.2.1+1
+  flutter_tts: ^4.0.2
   image: ^3.3.0
   mobx: ^2.3.3+2
   mobx_codegen: ^2.6.1
