@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:image/image.dart' as img;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classifier/classifier.dart';
 
@@ -32,6 +33,8 @@ enum _ResultStatus {
 }
 
 class _HomePageState extends State<HomePage> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late SharedPreferences preferences;
   FlashMode currentFlashMode = FlashMode.auto;
   String accuracyLabel = "", plantLabel = "";
   double accuracyScore = 0.0;
@@ -71,6 +74,7 @@ class _HomePageState extends State<HomePage> {
 
     // #3
     _classifier = classifier;
+    preferences = await _prefs;
   }
 
   @override
@@ -161,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                                   plantLabel: plantLabel,
                                   accuracyScore: accuracyScore,
                                   diseaseStore: widget.diseaseStore,
+                                  preferences: preferences,
                                 ),
                               ),
                             );

@@ -3,14 +3,17 @@ import 'dart:io';
 import 'package:erwinia/widgets/squared_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TreatmentScreen extends StatefulWidget {
   final Map plantData;
   final File imageFile;
+  final SharedPreferences preferences;
   const TreatmentScreen({
     super.key,
     required this.plantData,
     required this.imageFile,
+    required this.preferences,
   });
 
   @override
@@ -19,13 +22,15 @@ class TreatmentScreen extends StatefulWidget {
 
 class _TreatmentScreenState extends State<TreatmentScreen> {
   final FlutterTts flutterTts = FlutterTts();
-  bool voiceModeActive = false;
+  bool voiceModeActive = false, mode = false;
   String symptoms = "", preventions = "", control = "";
 
   @override
   void initState() {
     super.initState();
+    voiceModeActive = widget.preferences.getBool("voiceActive") ?? true;
     initTts();
+    loadData();
     flutterTts.setCompletionHandler(() {
       setState(() {
         voiceModeActive = false;
@@ -38,30 +43,46 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
     await flutterTts.setLanguage("pt-PT");
   }
 
+  Future<void> changeAndSaveMode() async {
+    mode = await widget.preferences
+        .setBool("voiceActive", !voiceModeActive)
+        .then((value) => !voiceModeActive);
+    setState(() {
+      voiceModeActive = mode;
+    });
+  }
+
+  loadData() {
+    for (var symptom in widget.plantData["symptoms"]) {
+      symptoms += symptom;
+    }
+    for (var prevention in widget.plantData["prevent"]) {
+      preventions += prevention;
+    }
+    for (var treatment in widget.plantData["control"]) {
+      control += treatment;
+    }
+  }
+
+  @override
+  Future<void> dispose() async {
+    super.dispose();
+    await flutterTts.stop();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (voiceModeActive) {
+      speak();
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detalhes"),
         actions: [
           ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                voiceModeActive = !voiceModeActive;
-              });
-              if (voiceModeActive) {
-                debugPrint("Voice mode ON!");
-                flutterTts.speak(widget.plantData["diagnosed"] +
-                    ". Sintomas. " +
-                    symptoms +
-                    " Medidas Preventivas. " +
-                    preventions +
-                    " Controle/Tratamento. " +
-                    control);
-              } else {
-                debugPrint("Voice Mode OFF!");
-                flutterTts.stop();
-              }
+            onPressed: () async {
+              await changeAndSaveMode();
+              await speak();
             },
             icon: Icon(
               voiceModeActive
@@ -75,7 +96,7 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.more_vert_rounded),
+            icon: const Icon(Icons.download_rounded),
           ),
           const SizedBox(
             width: 4,
@@ -185,5 +206,17 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> speak() async {
+    if (voiceModeActive) {
+      debugPrint("Voice mode ON!");
+      await flutterTts.speak(
+        "Sintomas. $symptoms. Medidas Preventivas. $preventions. Tratamento/Controle. $control",
+      );
+    } else {
+      debugPrint("Voice Mode OFF!");
+      await flutterTts.stop();
+    }
   }
 }
