@@ -1,9 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:erwinia/widgets/squared_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class TreatmentScreen extends StatefulWidget {
   final Map plantData;
@@ -95,7 +101,9 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
             width: 4,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              await savePDF();
+            },
             icon: const Icon(Icons.download_rounded),
           ),
           const SizedBox(
@@ -218,5 +226,105 @@ class _TreatmentScreenState extends State<TreatmentScreen> {
       debugPrint("Voice Mode OFF!");
       await flutterTts.stop();
     }
+  }
+
+  Future<void> requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+    ].request();
+
+    if (statuses[Permission.storage] != PermissionStatus.granted) {
+      throw Exception("Permissao nao garantida!");
+    }
+  }
+
+  Future<void> savePDF() async {
+    await requestPermissions();
+    if (!widget.imageFile.existsSync()) {
+      throw Exception("Image file does not exist!");
+    }
+
+    final Uint8List imageBytes = await widget.imageFile.readAsBytes();
+    debugPrint('Image bytes length: ${imageBytes.length}');
+
+    if (imageBytes.isEmpty) {
+      throw Exception("Failed to read image bytes!");
+    }
+
+    final pdf = pw.Document();
+    final image = pw.MemoryImage(imageBytes);
+    final dateTime = DateTime.now();
+    final String formattedDate = DateFormat("dd/MM/yyyy").format(dateTime);
+
+    debugPrint(symptoms);
+
+    pdf.addPage(
+      pw.MultiPage(
+        build: (context) => [
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      widget.plantData["diagnosed"],
+                      style: pw.TextStyle(
+                        fontSize: 16,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.Text(formattedDate)
+                  ]),
+              pw.Divider(),
+              pw.Container(
+                width: 400,
+                height: 350,
+                decoration: pw.BoxDecoration(
+                  image: pw.DecorationImage(image: image),
+                  borderRadius: pw.BorderRadius.circular(12),
+                ),
+              ),
+              pw.SizedBox(height: 8),
+              pw.Text(
+                "Sintomas",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(symptoms),
+              pw.SizedBox(height: 8),
+              pw.Text(
+                "Medidas Preventivas",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(preventions),
+              pw.SizedBox(height: 8),
+              pw.Text(
+                "Tratamento/Controle",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(control),
+            ],
+          )
+        ],
+      ),
+    );
+
+    final directory = await getExternalStorageDirectory();
+    if (directory == null) {
+      throw Exception("Erro ao pegar o directorio para salver o documento!");
+    }
+
+    final filePath =
+        '${directory.path}/erwinia_${widget.plantData["diagnosed"]}_${dateTime.toIso8601String()}.pdf';
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    debugPrint('PDF saved to: $filePath');
+
+    final result = await OpenFile.open(filePath);
+    debugPrint("Open file result: $result");
   }
 }
