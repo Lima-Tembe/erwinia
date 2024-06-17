@@ -6,18 +6,21 @@ import 'package:erwinia/widgets/squared_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SituationScreen extends StatefulWidget {
   final File imageFile;
   final String plantLabel;
   final double accuracyScore;
   final DiseaseStore diseaseStore;
+  final SharedPreferences preferences;
   const SituationScreen({
     super.key,
     required this.imageFile,
     required this.plantLabel,
     required this.accuracyScore,
     required this.diseaseStore,
+    required this.preferences,
   });
 
   @override
@@ -26,17 +29,21 @@ class SituationScreen extends StatefulWidget {
 
 class _SituationScreenState extends State<SituationScreen> {
   final FlutterTts flutterTts = FlutterTts();
-  bool voiceModeActive = false;
+  bool mode = false;
+  late bool voiceModeActive;
+  late Map plantData;
 
   @override
   void initState() {
     super.initState();
+    voiceModeActive = widget.preferences.getBool("voiceActive") ?? true;
     initTts();
-    flutterTts.setCompletionHandler(() {
+    flutterTts.setCompletionHandler(() async {
       setState(() {
         voiceModeActive = false;
       });
     });
+    _initializePlantData();
   }
 
   Future<void> initTts() async {
@@ -44,36 +51,46 @@ class _SituationScreenState extends State<SituationScreen> {
     await flutterTts.setLanguage("pt-PT");
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _initializePlantData() async {
     debugPrint("Length of Diseases: ${widget.diseaseStore.diseaseData.length}");
-    Map plantData = widget.diseaseStore.diseaseData.firstWhere(
+    plantData = widget.diseaseStore.diseaseData.firstWhere(
       (disease) => disease["name"] == widget.plantLabel,
     );
+  }
+
+  Future<void> changeAndSaveMode() async {
+    mode = await widget.preferences
+        .setBool("voiceActive", !voiceModeActive)
+        .then((value) => !voiceModeActive);
+    setState(() {
+      voiceModeActive = mode;
+    });
+  }
+
+  @override
+  Future<void> dispose() async {
+    super.dispose();
+    await flutterTts.stop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final String infectedText =
         "A probabilidade da planta estar doente é de ${(widget.accuracyScore * 100).toStringAsFixed(2)}%. A planta pode estar infectada com uma doença chamada ${plantData["diagnosed"]}!";
     final String healthyText =
         "A probabilidade da planta estar saudável é de ${(widget.accuracyScore * 100).toStringAsFixed(2)}%";
+    if (voiceModeActive) {
+      speak(plantData, infectedText, healthyText, widget.preferences);
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("Resultado"),
         actions: [
           ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                voiceModeActive = !voiceModeActive;
-              });
-              if (voiceModeActive) {
-                debugPrint("Voice mode ON!");
-                if (plantData["infected"]) {
-                  flutterTts.speak(infectedText + plantData["description"]);
-                } else {
-                  flutterTts.speak(healthyText);
-                }
-              } else {
-                debugPrint("Voice Mode OFF!");
-                flutterTts.stop();
-              }
+            onPressed: () async {
+              await changeAndSaveMode();
+              await speak(
+                  plantData, infectedText, healthyText, widget.preferences);
             },
             icon: Icon(
               voiceModeActive
@@ -151,6 +168,7 @@ class _SituationScreenState extends State<SituationScreen> {
                   builder: ((context) => TreatmentScreen(
                         plantData: plantData,
                         imageFile: widget.imageFile,
+                        preferences: widget.preferences,
                       ))),
             );
           },
@@ -159,5 +177,24 @@ class _SituationScreenState extends State<SituationScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> speak(
+    Map<dynamic, dynamic> plantData,
+    String infectedText,
+    String healthyText,
+    SharedPreferences preferences,
+  ) async {
+    if (voiceModeActive) {
+      debugPrint("Voice mode ON!");
+      if (plantData["infected"]) {
+        await flutterTts.speak(infectedText + plantData["description"]);
+      } else {
+        await flutterTts.speak(healthyText);
+      }
+    } else {
+      debugPrint("Voice Mode OFF!");
+      await flutterTts.stop();
+    }
   }
 }

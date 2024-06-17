@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:image/image.dart' as img;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classifier/classifier.dart';
 
@@ -32,6 +33,8 @@ enum _ResultStatus {
 }
 
 class _HomePageState extends State<HomePage> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late SharedPreferences preferences;
   FlashMode currentFlashMode = FlashMode.auto;
   String accuracyLabel = "", plantLabel = "";
   double accuracyScore = 0.0;
@@ -56,6 +59,12 @@ class _HomePageState extends State<HomePage> {
     _loadClassifier();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    widget.cameraStore.cameraController?.dispose();
+  }
+
   Future _loadClassifier() async {
     debugPrint(
       'Start loading of Classifier with '
@@ -71,10 +80,12 @@ class _HomePageState extends State<HomePage> {
 
     // #3
     _classifier = classifier;
+    preferences = await _prefs;
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.cameraStore.cameraController?.initialize();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Set background to transparent
@@ -119,25 +130,22 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       extendBody: true,
       backgroundColor: Colors.black,
-      body: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: Observer(builder: (_) {
-          return SizedBox.expand(
-            child: widget.cameraStore.canAccessCamera
-                ? CameraPreview(widget.cameraStore.cameraController!)
-                : Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await cameraPermission(context);
-                      },
-                      child: const Text(
-                        "Dar acesso a camera",
-                      ),
+      body: Observer(builder: (_) {
+        return SizedBox.expand(
+          child: widget.cameraStore.canAccessCamera
+              ? CameraPreview(widget.cameraStore.cameraController!)
+              : Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await cameraPermission(context);
+                    },
+                    child: const Text(
+                      "Dar acesso a camera",
                     ),
                   ),
-          );
-        }),
-      ),
+                ),
+        );
+      }),
       floatingActionButton: Observer(builder: (_) {
         return Visibility(
           visible: widget.cameraStore.canAccessCamera,
@@ -161,6 +169,7 @@ class _HomePageState extends State<HomePage> {
                                   plantLabel: plantLabel,
                                   accuracyScore: accuracyScore,
                                   diseaseStore: widget.diseaseStore,
+                                  preferences: preferences,
                                 ),
                               ),
                             );
@@ -241,7 +250,7 @@ class _HomePageState extends State<HomePage> {
     if (status == PermissionStatus.granted) {
       cameras = await availableCameras();
       widget.cameraStore.cameraController =
-          CameraController(cameras[0], ResolutionPreset.medium);
+          CameraController(cameras[0], ResolutionPreset.high);
       widget.cameraStore.cameraController?.initialize().then((value) => {
             widget.cameraStore.cameraController
                 ?.setFlashMode(currentFlashMode)
