@@ -59,6 +59,12 @@ class _HomePageState extends State<HomePage> {
     _loadClassifier();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    widget.cameraStore.cameraController?.dispose();
+  }
+
   Future _loadClassifier() async {
     debugPrint(
       'Start loading of Classifier with '
@@ -79,6 +85,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    widget.cameraStore.cameraController?.initialize();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Set background to transparent
@@ -123,25 +130,22 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       extendBody: true,
       backgroundColor: Colors.black,
-      body: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: Observer(builder: (_) {
-          return SizedBox.expand(
-            child: widget.cameraStore.canAccessCamera
-                ? CameraPreview(widget.cameraStore.cameraController!)
-                : Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await cameraPermission(context);
-                      },
-                      child: const Text(
-                        "Dar acesso a camera",
-                      ),
+      body: Observer(builder: (_) {
+        return SizedBox.expand(
+          child: widget.cameraStore.canAccessCamera
+              ? CameraPreview(widget.cameraStore.cameraController!)
+              : Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await cameraPermission(context);
+                    },
+                    child: const Text(
+                      "Dar acesso a camera",
                     ),
                   ),
-          );
-        }),
-      ),
+                ),
+        );
+      }),
       floatingActionButton: Observer(builder: (_) {
         return Visibility(
           visible: widget.cameraStore.canAccessCamera,
@@ -246,7 +250,7 @@ class _HomePageState extends State<HomePage> {
     if (status == PermissionStatus.granted) {
       cameras = await availableCameras();
       widget.cameraStore.cameraController =
-          CameraController(cameras[0], ResolutionPreset.medium);
+          CameraController(cameras[0], ResolutionPreset.high);
       widget.cameraStore.cameraController?.initialize().then((value) => {
             widget.cameraStore.cameraController
                 ?.setFlashMode(currentFlashMode)
